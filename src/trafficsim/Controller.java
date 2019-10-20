@@ -237,7 +237,7 @@ public class Controller {
   }
 
   public Controller() throws FileNotFoundException {
-    for (int k = 0; k < 12; k++) {
+    // for (int k = 0; k < 12; k++) {
       generation = Evolution.getInitialGeneration();
       lightConfigurations = decodeCycle(generation[0]);
       initMap();
@@ -267,13 +267,18 @@ public class Controller {
           double average = 0.0;
           for (Tuple<CycleEncoding, Double> result : results) average += result.y;
           average /= Parameters.GENERATION_SIZE;
-          output.printf("%3d;%10.4f;%10.4f;%d\n", j, bestResult.y, average, end - start);
-          System.out.printf("%3d Best: %10.4f\tAverage: %10.4f\tTook: %dms\tMutation: %5.4\n", j, bestResult.y, average, end - start, Evolution.getMutationTreshold());
+          double std = 0.0;
+          for (Tuple<CycleEncoding, Double> result : results) std += Math.pow(result.y - average, 2);
+          std = Math.sqrt(std / Parameters.GENERATION_SIZE);
+          output.printf("%3d;%10.4f;%10.4f;%10.4f;%d\n", j, bestResult.y, average, std, end - start);
+          System.out.printf("%3d Best: %10.4f\tAverage: %10.4f\tStd: %10.4f\tTook: %dms\tMutation: %5.4f\n", j, bestResult.y, average, std , end - start, Evolution.getMutationTreshold());
           // move to next generation
           generation = Evolution.getNextGeneration(results);
           results = new ArrayList<Tuple<CycleEncoding, Double>>();
         }
-      } catch (Exception e) {}
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
       finally {
         for (Tuple<CycleEncoding, Double> globalBest : topTen) {
           output.println("\nGlobal best: " + globalBest.y + "\n" + globalBest.x);
@@ -282,7 +287,7 @@ public class Controller {
         output.close();
         Evolution.resetMutationTreshold();
       }
-    }
+    // }
   }
 
   public static void main(String[] args) throws FileNotFoundException {
