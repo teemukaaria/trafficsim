@@ -3,3 +3,5 @@ simu_results_*.txt
 .vscode/*
 .settings/*
 bash.exe.stackdump
+*.csv
+*.xlsx
